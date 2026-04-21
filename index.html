@@ -83,19 +83,30 @@
       background-position: center;
     }
 
-    /* Landscape: foto horizontal */
     @media (orientation: landscape) {
-      #menu {
-        background-image: url('FUNDO-HORIZONTAL.png');
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: center;
-        align-items: center;
-        gap: clamp(16px, 4vw, 48px);
-        padding-top: max(clamp(8px, 2vh, 16px), var(--safe-top));
-        padding-bottom: max(clamp(8px, 2vh, 16px), var(--safe-bottom));
-      }
-    }
+  #menu {
+    background-image: url('FUNDO-HORIZONTAL.png');
+    
+    /* volta pra coluna (um embaixo do outro) */
+    flex-direction: column;
+
+    /* centraliza bonitinho */
+    justify-content: center;
+    align-items: center;
+
+    /* gap menor (aqui você controla o espaço!) */
+    gap: clamp(8px, 2vh, 16px);
+
+    padding-top: max(clamp(8px, 2vh, 16px), var(--safe-top));
+    padding-bottom: max(clamp(8px, 2vh, 16px), var(--safe-bottom));
+  }
+
+  /* remove o comportamento lateral do logo */
+  .logo-box {
+    margin-bottom: 4px;
+    max-width: 100%;
+  }
+}
 
     #menu::after {
       content: '';
