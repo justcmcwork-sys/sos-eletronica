@@ -88,10 +88,12 @@
       #menu {
         background-image: url('FUNDO-HORIZONTAL.png');
         flex-direction: row;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         justify-content: center;
         align-items: center;
-        gap: clamp(8px, 2vw, 24px);
+        gap: clamp(16px, 4vw, 48px);
+        padding-top: max(clamp(8px, 2vh, 16px), var(--safe-top));
+        padding-bottom: max(clamp(8px, 2vh, 16px), var(--safe-bottom));
       }
     }
 
@@ -117,12 +119,12 @@
       margin-bottom: clamp(4px, 1.5vh, 12px);
     }
 
-    /* Em landscape mobile o logo-box fica ao lado dos botões */
-    @media (orientation: landscape) and (max-height: 500px) {
+    /* Em landscape o logo-box fica ao lado dos botões, sem margin-bottom */
+    @media (orientation: landscape) {
       .logo-box {
         margin-bottom: 0;
         flex: 0 0 auto;
-        max-width: 45%;
+        max-width: 50%;
       }
     }
 
@@ -134,9 +136,9 @@
       animation: pulse 2.5s infinite;
     }
 
-    @media (orientation: landscape) and (max-height: 500px) {
+    @media (orientation: landscape) {
       .logo-box .emoji {
-        font-size: clamp(24px, 5vh, 40px);
+        font-size: clamp(24px, 5vh, 44px);
         margin-bottom: 6px;
       }
     }
@@ -154,8 +156,8 @@
       text-align: center;
     }
 
-    @media (orientation: landscape) and (max-height: 500px) {
-      h1 { font-size: clamp(11px, 3vh, 20px); }
+    @media (orientation: landscape) {
+      h1 { font-size: clamp(11px, 3vh, 22px); }
     }
 
     .subtitle {
@@ -166,7 +168,7 @@
       text-align: center;
     }
 
-    /* Grupo de botões do menu em landscape */
+    /* Grupo de botões do menu */
     .menu-btns {
       display: flex;
       flex-direction: column;
@@ -175,13 +177,15 @@
       width: 100%;
     }
 
-    @media (orientation: landscape) and (max-height: 500px) {
+    @media (orientation: landscape) {
       .menu-btns {
-        flex-direction: row;
-        flex-wrap: wrap;
+        flex-direction: column;
+        flex-wrap: nowrap;
         justify-content: center;
-        max-width: 52%;
-        gap: clamp(6px, 1.5vw, 14px);
+        align-items: center;
+        width: auto;
+        flex: 0 0 auto;
+        gap: clamp(8px, 2vh, 16px);
       }
     }
 
@@ -205,10 +209,10 @@
       touch-action: manipulation;
     }
 
-    @media (orientation: landscape) and (max-height: 500px) {
+    @media (orientation: landscape) {
       .botao {
-        width: clamp(140px, 22vw, 220px);
-        min-height: clamp(40px, 8vh, 52px);
+        width: clamp(180px, 28vw, 280px);
+        min-height: clamp(40px, 8vh, 54px);
         font-size: clamp(6px, 1.8vh, 10px);
         padding: clamp(8px, 2vh, 14px) clamp(10px, 2vw, 18px);
       }
@@ -406,7 +410,6 @@
       touch-action: manipulation;
     }
 
-    /* Em landscape o calendário fica mais baixo, células menores */
     @media (orientation: landscape) and (max-height: 500px) {
       .dia {
         min-height: clamp(28px, 7vh, 50px);
@@ -506,7 +509,6 @@
       -webkit-backdrop-filter: blur(4px);
     }
 
-    /* Desktop e tablets grandes: popup centralizado */
     @media (min-height: 560px) and (min-width: 480px) {
       .popup {
         align-items: center;
@@ -514,7 +516,6 @@
       }
     }
 
-    /* Landscape mobile: popup centralizado mas com max-height menor */
     @media (orientation: landscape) and (max-height: 500px) {
       .popup {
         align-items: center;
@@ -604,7 +605,7 @@
       border-radius: 10px;
       color: var(--text);
       font-family: 'Poppins', sans-serif;
-      font-size: 16px; /* 16px evita zoom automático no iOS */
+      font-size: 16px;
       padding: clamp(8px, 1.8vh, 14px) clamp(10px, 2.5vw, 16px);
       outline: none;
       transition: border-color 0.2s;
@@ -625,7 +626,6 @@
       resize: none;
     }
 
-    /* Em landscape mobile: formulários em 2 colunas */
     @media (orientation: landscape) and (max-height: 500px) {
       .form-cols {
         display: grid;
@@ -695,7 +695,6 @@
       flex: 1;
     }
 
-    /* Em landscape/desktop as info-cards ficam em 2 colunas */
     @media (min-width: 640px) {
       .info-list {
         display: grid;
@@ -831,7 +830,6 @@
       margin-bottom: 14px;
     }
 
-    /* Popup ver dia */
     .popup-ver-header {
       display: flex;
       align-items: center;
@@ -1200,15 +1198,11 @@
   </div>
 
   <script>
-    // =====================================================================
-    //  URL DO APPS SCRIPT
-    // =====================================================================
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRM-DsuGe3tdsp2TIQdkJiWhaNWnJ9RiHomZqZ_dGag_vdAFJvHLa3ZN9u21HrN6Ko/exec";
 
     const SENHA_ADMIN = "2026";
     const SYNC_INTERVALO = 5_000;
 
-    // ===== CORES DAS DISCIPLINAS =====
     const CORES = {
       "Automação":            "#5DADE2",
       "Biologia":             "#2ECC71",
@@ -1225,7 +1219,6 @@
       "Química":              "#27AE60"
     };
 
-    // ===== ESTADO =====
     let isAdmin = false;
     let eventosSheets = {};
     let syncTimer = null;
@@ -1264,9 +1257,6 @@
 
     garantirInfosPadrao();
 
-    // =====================================================================
-    //  TOAST
-    // =====================================================================
     let toastTimer = null;
     function showToast(msg, tipo = "ok") {
       const el = document.getElementById("toast");
@@ -1276,9 +1266,6 @@
       toastTimer = setTimeout(() => { el.className = ""; }, 3000);
     }
 
-    // =====================================================================
-    //  API
-    // =====================================================================
     async function chamarAPI(payload) {
       const res = await fetch(APPS_SCRIPT_URL, {
         method: "POST",
@@ -1290,9 +1277,6 @@
       return data;
     }
 
-    // =====================================================================
-    //  SINCRONIZAÇÃO
-    // =====================================================================
     async function sincronizarSheets() {
       try {
         const res = await fetch(APPS_SCRIPT_URL + "?action=get", { cache: "no-store" });
@@ -1311,9 +1295,6 @@
       return eventosSheets[dataIso] || [];
     }
 
-    // =====================================================================
-    //  NAVEGAÇÃO
-    // =====================================================================
     function voltarMenu() {
       document.getElementById("menu").style.display = "flex";
       document.getElementById("calendarioContainer").style.display = "none";
@@ -1346,9 +1327,6 @@
       atualizarPermissoes();
     }
 
-    // =====================================================================
-    //  PERMISSÕES ADMIN
-    // =====================================================================
     function atualizarPermissoes() {
       document.getElementById("fabBtn").style.display = isAdmin ? "flex" : "none";
       document.getElementById("btnGear").classList.toggle("admin", isAdmin);
@@ -1379,9 +1357,6 @@
       showToast("Modo admin desativado", "ok");
     }
 
-    // =====================================================================
-    //  FAB
-    // =====================================================================
     function onFabClick() {
       if (!isAdmin) return;
       if (telaAtual === "calendario") {
@@ -1396,9 +1371,6 @@
     function fecharPopup(id) { document.getElementById(id).style.display = "none"; }
     function fecharPopupFora(e, id) { if (e.target === document.getElementById(id)) fecharPopup(id); }
 
-    // =====================================================================
-    //  CALENDÁRIO
-    // =====================================================================
     function mudarMes(delta) {
       mesAtual += delta;
       if (mesAtual > 11) { mesAtual = 0; anoAtual++; }
@@ -1437,9 +1409,6 @@
       }
     }
 
-    // =====================================================================
-    //  VER DIA
-    // =====================================================================
     function verDia(dataIso) {
       dataSelecionada = dataIso;
       document.getElementById("popupVerData").textContent = formatarBonito(dataIso);
@@ -1497,9 +1466,6 @@
       document.getElementById("popup").style.display = "flex";
     }
 
-    // =====================================================================
-    //  REMOVER EVENTO
-    // =====================================================================
     async function removerEvento(dataIso, disciplina, tipo, btnEl) {
       if (!isAdmin) return;
       if (!confirm(`Remover "${tipo}" de ${disciplina} em ${formatarBonito(dataIso)}?`)) return;
@@ -1520,9 +1486,6 @@
       }
     }
 
-    // =====================================================================
-    //  SALVAR EVENTO
-    // =====================================================================
     async function salvarEvento() {
       const tipo = document.getElementById("tipo").value;
       const disc = document.getElementById("disciplina").value;
@@ -1547,9 +1510,6 @@
       }
     }
 
-    // =====================================================================
-    //  INFOS
-    // =====================================================================
     function renderInfos() {
       const list = document.getElementById("infoList");
       if (!list) return;
@@ -1628,9 +1588,6 @@
       renderInfos();
     }
 
-    // =====================================================================
-    //  UTILS
-    // =====================================================================
     function formatar(data) { return data.toISOString().split("T")[0]; }
 
     function formatarBonito(iso) {
