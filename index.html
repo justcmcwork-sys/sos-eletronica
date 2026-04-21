@@ -422,7 +422,8 @@
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
-      align-content: start;
+      align-content: stretch;
+      grid-auto-rows: 1fr;
     }
 
     .dia {
@@ -487,13 +488,11 @@
 
     .evento-tag {
       display: block;
-      margin-top: 3px;
-      padding: 2px 4px;
-      /* um pouco mais de respiro */
-      border-radius: 4px;
+      margin-top: 4px;
+      padding: 5px 8px;
+      border-radius: 6px;
 
-      font-size: clamp(6px, 1.4vw, 9px);
-      /* antes era até 7px */
+      font-size: clamp(8px, 2vw, 12px);
       font-weight: 700;
 
       white-space: nowrap;
@@ -502,9 +501,9 @@
 
       color: #fff;
       font-family: 'Poppins', sans-serif;
-      line-height: 1.3;
+      line-height: 1.4;
 
-      box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
     }
 
     @media (orientation: landscape) and (max-height: 500px) {
@@ -946,8 +945,8 @@
 
     .evento-item-tipo {
       font-family: 'Poppins', sans-serif;
-      font-size: clamp(9px, 2vw, 11px);
-      font-weight: 700;
+      font-size: clamp(11px, 2.5vw, 13px);
+      font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       background: rgba(255, 255, 255, 0.12);
@@ -958,8 +957,8 @@
 
     .evento-item-disc {
       font-family: 'Poppins', sans-serif;
-      font-size: clamp(12px, 2.8vw, 15px);
-      font-weight: 700;
+      font-size: clamp(14px, 3.2vw, 18px);
+      font-weight: 800;
       color: #fff;
     }
 
@@ -1034,9 +1033,6 @@
       margin-bottom: 14px;
     }
 
-    .evento-tag:nth-of-type(n+3) {
-      display: none;
-    }
 
     .sync-badge {
       display: none;
@@ -1049,7 +1045,6 @@
       font-weight: 900;
       letter-spacing: 1px;
       cursor: pointer;
-      transition: transform 0.1s;
     }
 
     .evento-tag.extra:active {
@@ -1483,39 +1478,55 @@
 
       const hoje = new Date();
       const nomeMes = new Date(anoAtual, mesAtual, 1).toLocaleString("pt-BR", { month: "long", year: "numeric" });
-      document.getElementById("mesLabel").textContent = nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
+      document.getElementById("mesLabel").textContent =
+        nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
 
       const primeiroDia = new Date(anoAtual, mesAtual, 1).getDay();
       const totalDias = new Date(anoAtual, mesAtual + 1, 0).getDate();
 
-      for (let i = 0; i < primeiroDia; i++) cal.innerHTML += `<div class="dia vazio"></div>`;
+      // dias vazios
+      for (let i = 0; i < primeiroDia; i++) {
+        cal.innerHTML += `<div class="dia vazio"></div>`;
+      }
 
+      // dias do mês
       for (let d = 1; d <= totalDias; d++) {
         const dataIso = formatar(new Date(anoAtual, mesAtual, d));
-        const isHoje = d === hoje.getDate() && mesAtual === hoje.getMonth() && anoAtual === hoje.getFullYear();
+        const isHoje =
+          d === hoje.getDate() &&
+          mesAtual === hoje.getMonth() &&
+          anoAtual === hoje.getFullYear();
+
         const evs = todosEventos(dataIso);
 
+        // ===== NOVA LÓGICA (2 +X) =====
         const maxVisiveis = 2;
 
-        const tagsVisiveis = evs.slice(0, maxVisiveis).map(e => {
-          const cor = CORES[e.disc] || "#555";
-          return `<span class="evento-tag" style="background:${cor}">
-    ${escapeHtml(e.tipo || "?")} ${escapeHtml(e.disc || "")}
-  </span>`;
-        }).join("");
+        const tagsVisiveis = evs
+          .slice(0, maxVisiveis)
+          .map(e => {
+            const cor = CORES[e.disc] || "#555";
+            return `<span class="evento-tag" style="background:${cor}">
+          ${escapeHtml(e.tipo || "?")} ${escapeHtml(e.disc || "")}
+        </span>`;
+          })
+          .join("");
 
         const restantes = evs.length - maxVisiveis;
 
-        const tagExtra = restantes > 0
-          ? `<span class="evento-tag extra" onclick="event.stopPropagation(); verDia('${dataIso}')">+${restantes}</span>`
-          : "";
+        let tagExtra = "";
+        if (restantes > 0) {
+          tagExtra = `<span class="evento-tag extra" onclick="event.stopPropagation(); verDia('${dataIso}')">+${restantes}</span>`;
+        }
 
         const tags = tagsVisiveis + tagExtra;
+        // ===== FIM =====
 
         cal.innerHTML += `
-          <div class="dia${isHoje ? " hoje" : ""}" onclick="verDia('${dataIso}')">
-            <span class="num-dia">${d}</span>${tags}
-          </div>`;
+      <div class="dia${isHoje ? " hoje" : ""}" onclick="verDia('${dataIso}')">
+        <span class="num-dia">${d}</span>
+        ${tags}
+      </div>`;
       }
     }
 
