@@ -7,7 +7,6 @@
   <title>S.O.S Eletrônica</title>
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Poppins:wght@400;500;600;700&display=swap"
     rel="stylesheet">
-  <link rel="icon" type="image/png" href="favicon.png">
   <style>
     :root {
       --bg-dark: #0d0b1e;
@@ -33,7 +32,8 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    html, body {
+    html,
+    body {
       height: 100%;
       overflow: hidden;
     }
@@ -51,16 +51,16 @@
       pointer-events: none;
       position: fixed;
       inset: 0;
-      background: repeating-linear-gradient(
-        to bottom,
-        transparent 0px, transparent 3px,
-        rgba(0, 0, 0, 0.07) 3px, rgba(0, 0, 0, 0.07) 4px
-      );
+      background: repeating-linear-gradient(to bottom,
+          transparent 0px, transparent 3px,
+          rgba(0, 0, 0, 0.07) 3px, rgba(0, 0, 0, 0.07) 4px);
       z-index: 9999;
     }
 
     @media (orientation: landscape) and (max-height: 500px) {
-      body::before { display: none; }
+      body::before {
+        display: none;
+      }
     }
 
     /* ============================================================ MENU ============================================================ */
@@ -85,29 +85,29 @@
     }
 
     @media (orientation: landscape) {
-  #menu {
-    background-image: url('FUNDO-HORIZONTAL.png');
-    
-    /* volta pra coluna (um embaixo do outro) */
-    flex-direction: column;
+      #menu {
+        background-image: url('FUNDO-HORIZONTAL.png');
 
-    /* centraliza bonitinho */
-    justify-content: center;
-    align-items: center;
+        /* volta pra coluna (um embaixo do outro) */
+        flex-direction: column;
 
-    /* gap menor (aqui você controla o espaço!) */
-     gap: clamp(16px, 3.5vh, 28px); 
+        /* centraliza bonitinho */
+        justify-content: center;
+        align-items: center;
 
-    padding-top: max(clamp(8px, 2vh, 16px), var(--safe-top));
-    padding-bottom: max(clamp(8px, 2vh, 16px), var(--safe-bottom));
-  }
+        /* gap menor (aqui você controla o espaço!) */
+        gap: clamp(16px, 3.5vh, 28px);
 
-  /* remove o comportamento lateral do logo */
-  .logo-box {
-    margin-bottom: 4px;
-    max-width: 100%;
-  }
-}
+        padding-top: max(clamp(8px, 2vh, 16px), var(--safe-top));
+        padding-bottom: max(clamp(8px, 2vh, 16px), var(--safe-bottom));
+      }
+
+      /* remove o comportamento lateral do logo */
+      .logo-box {
+        margin-bottom: 4px;
+        max-width: 100%;
+      }
+    }
 
     #menu::after {
       content: '';
@@ -121,15 +121,17 @@
       z-index: 0;
     }
 
-    #menu > * {
+    #menu>* {
       position: relative;
       z-index: 1;
     }
 
     .logo-box {
-  text-align: center;
-  margin-bottom: clamp(10px, 2.5vh, 20px); /* antes era bem menor */
-}
+      text-align: center;
+      margin-bottom: clamp(10px, 2.5vh, 20px);
+      /* antes era bem menor */
+    }
+
     /* Em landscape o logo-box fica ao lado dos botões, sem margin-bottom */
     @media (orientation: landscape) {
       .logo-box {
@@ -155,23 +157,33 @@
     }
 
     @keyframes pulse {
-      0%, 100% { filter: drop-shadow(0 0 10px #2bbbd1); }
-      50%       { filter: drop-shadow(0 0 28px #2bbbd1) drop-shadow(0 0 48px #2bbbd199); }
+
+      0%,
+      100% {
+        filter: drop-shadow(0 0 10px #2bbbd1);
+      }
+
+      50% {
+        filter: drop-shadow(0 0 28px #2bbbd1) drop-shadow(0 0 48px #2bbbd199);
+      }
     }
 
     h1 {
-  font-size: clamp(14px, 5.5vw, 36px); /* levemente maior */
-  text-shadow: 3px 3px #ff3b3b, 6px 6px rgba(255, 59, 59, 0.3);
-  letter-spacing: 3px; /* antes era 2px */
-  line-height: 1.6;
-  text-align: center;
-}
+      font-size: clamp(14px, 5.5vw, 36px);
+      /* levemente maior */
+      text-shadow: 3px 3px #ff3b3b, 6px 6px rgba(255, 59, 59, 0.3);
+      letter-spacing: 3px;
+      /* antes era 2px */
+      line-height: 1.6;
+      text-align: center;
+    }
+
     @media (orientation: landscape) {
-  h1 { 
-    font-size: clamp(12px, 3.2vh, 24px);
-    letter-spacing: 2.5px;
-  }
-}
+      h1 {
+        font-size: clamp(12px, 3.2vh, 24px);
+        letter-spacing: 2.5px;
+      }
+    }
 
     .subtitle {
       font-size: clamp(6px, 2vw, 13px);
@@ -322,7 +334,9 @@
       min-width: 36px;
     }
 
-    .btn-gear:active { transform: rotate(60deg); }
+    .btn-gear:active {
+      transform: rotate(60deg);
+    }
 
     .btn-gear.admin {
       color: var(--accent3);
@@ -364,7 +378,9 @@
       flex-shrink: 0;
     }
 
-    .cal-nav button:active { background: var(--accent); }
+    .cal-nav button:active {
+      background: var(--accent);
+    }
 
     .mes-label {
       font-family: 'Poppins', sans-serif;
@@ -421,6 +437,8 @@
       position: relative;
       overflow: hidden;
       touch-action: manipulation;
+      display: flex;
+      flex-direction: column;
     }
 
     @media (orientation: landscape) and (max-height: 500px) {
@@ -441,7 +459,9 @@
       background: rgba(247, 201, 75, 0.08);
     }
 
-    .dia.hoje .num-dia { color: var(--accent3); }
+    .dia.hoje .num-dia {
+      color: var(--accent3);
+    }
 
     .dia.vazio {
       background: transparent;
@@ -460,26 +480,37 @@
     }
 
     @media (orientation: landscape) and (max-height: 500px) {
-      .num-dia { font-size: clamp(8px, 1.8vh, 12px); }
+      .num-dia {
+        font-size: clamp(8px, 1.8vh, 12px);
+      }
     }
 
     .evento-tag {
       display: block;
-      margin-top: 2px;
-      padding: 1px 2px;
-      border-radius: 3px;
-      font-size: clamp(4px, 1.1vw, 7px);
+      margin-top: 3px;
+      padding: 2px 4px;
+      /* um pouco mais de respiro */
+      border-radius: 4px;
+
+      font-size: clamp(6px, 1.4vw, 9px);
+      /* antes era até 7px */
       font-weight: 700;
+
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+
       color: #fff;
       font-family: 'Poppins', sans-serif;
-      line-height: 1.4;
+      line-height: 1.3;
+
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
     }
 
     @media (orientation: landscape) and (max-height: 500px) {
-      .evento-tag { font-size: clamp(4px, 1vh, 6px); }
+      .evento-tag {
+        font-size: clamp(4px, 1vh, 6px);
+      }
     }
 
     /* ============================================================ FAB ============================================================ */
@@ -579,11 +610,15 @@
     }
 
     @media (min-height: 560px) and (min-width: 480px) {
-      .drag-handle { display: none; }
+      .drag-handle {
+        display: none;
+      }
     }
 
     @media (orientation: landscape) and (max-height: 500px) {
-      .drag-handle { display: none; }
+      .drag-handle {
+        display: none;
+      }
     }
 
     .popup-content h3 {
@@ -632,7 +667,9 @@
       border-color: var(--accent);
     }
 
-    select option { background: var(--bg-card2); }
+    select option {
+      background: var(--bg-card2);
+    }
 
     textarea {
       min-height: clamp(60px, 10vh, 90px);
@@ -645,7 +682,10 @@
         grid-template-columns: 1fr 1fr;
         gap: 10px;
       }
-      .form-cols .form-group { margin-bottom: 0; }
+
+      .form-cols .form-group {
+        margin-bottom: 0;
+      }
     }
 
     .popup-btns {
@@ -673,7 +713,9 @@
       color: #000;
     }
 
-    .btn-salvar:active { opacity: 0.8; }
+    .btn-salvar:active {
+      opacity: 0.8;
+    }
 
     .btn-salvar.loading {
       opacity: 0.6;
@@ -685,7 +727,9 @@
       color: var(--text);
     }
 
-    .btn-fechar:active { background: rgba(255, 255, 255, 0.16); }
+    .btn-fechar:active {
+      background: rgba(255, 255, 255, 0.16);
+    }
 
     /* ============================================================ OUTRAS INFORMAÇÕES ============================================================ */
     #infoContainer {
@@ -811,7 +855,9 @@
       min-height: 36px;
     }
 
-    .btn-del:active { background: rgba(255, 59, 59, 0.15); }
+    .btn-del:active {
+      background: rgba(255, 59, 59, 0.15);
+    }
 
     .btn-edit {
       background: none;
@@ -826,7 +872,9 @@
       min-height: 36px;
     }
 
-    .btn-edit:active { background: rgba(43, 187, 209, 0.12); }
+    .btn-edit:active {
+      background: rgba(43, 187, 209, 0.12);
+    }
 
     .empty-state {
       text-align: center;
@@ -876,7 +924,9 @@
       flex-shrink: 0;
     }
 
-    .btn-add-evento:active { opacity: 0.78; }
+    .btn-add-evento:active {
+      opacity: 0.78;
+    }
 
     .evento-item {
       background: var(--bg-card2);
@@ -947,7 +997,9 @@
       transition: background 0.15s;
     }
 
-    .btn-del-evento:active { background: rgba(255, 59, 59, 0.15); }
+    .btn-del-evento:active {
+      background: rgba(255, 59, 59, 0.15);
+    }
 
     .btn-del-evento.loading {
       opacity: 0.5;
@@ -962,9 +1014,17 @@
       padding: clamp(16px, 4vh, 28px) 0;
     }
 
-    #popupInfo .popup-content h3    { color: var(--accent3); }
-    #popupEditInfo .popup-content h3 { color: var(--accent); }
-    #popupConfig .popup-content h3  { color: var(--accent3); }
+    #popupInfo .popup-content h3 {
+      color: var(--accent3);
+    }
+
+    #popupEditInfo .popup-content h3 {
+      color: var(--accent);
+    }
+
+    #popupConfig .popup-content h3 {
+      color: var(--accent3);
+    }
 
     .config-info {
       font-family: 'Poppins', sans-serif;
@@ -974,7 +1034,27 @@
       margin-bottom: 14px;
     }
 
-    .sync-badge { display: none; }
+    .evento-tag:nth-of-type(n+3) {
+      display: none;
+    }
+
+    .sync-badge {
+      display: none;
+    }
+
+    .evento-tag.extra {
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+      text-align: center;
+      font-weight: 900;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+
+    .evento-tag.extra:active {
+      transform: scale(0.95);
+    }
 
     /* ============================================================ TOAST ============================================================ */
     #toast {
@@ -1005,8 +1085,13 @@
       transform: translateX(-50%) translateY(0);
     }
 
-    #toast.ok  { border-color: rgba(43, 187, 209, 0.5); }
-    #toast.err { border-color: rgba(255, 200, 59, 0.5); }
+    #toast.ok {
+      border-color: rgba(43, 187, 209, 0.5);
+    }
+
+    #toast.err {
+      border-color: rgba(255, 200, 59, 0.5);
+    }
   </style>
 </head>
 
@@ -1217,19 +1302,19 @@
     const SYNC_INTERVALO = 5_000;
 
     const CORES = {
-      "Automação":            "#5DADE2",
-      "Biologia":             "#2ECC71",
-      "FEI":                  "#82E0AA",
+      "Automação": "#5DADE2",
+      "Biologia": "#2ECC71",
+      "FEI": "#82E0AA",
       "Filosofia/Sociologia": "#8E44AD",
-      "Física":               "#FF6FAE",
-      "Geografia":            "#9B59B6",
-      "História":             "#6C3483",
-      "Inglês":               "#1B4F72",
-      "Português":            "#21618C",
-      "Manutenção":           "#48C9B0",
-      "Matemática":           "#FF4FA3",
-      "Potência":             "#F39C12",
-      "Química":              "#27AE60"
+      "Física": "#FF6FAE",
+      "Geografia": "#9B59B6",
+      "História": "#6C3483",
+      "Inglês": "#1B4F72",
+      "Português": "#21618C",
+      "Manutenção": "#48C9B0",
+      "Matemática": "#FF4FA3",
+      "Potência": "#F39C12",
+      "Química": "#27AE60"
     };
 
     let isAdmin = false;
@@ -1387,7 +1472,7 @@
     function mudarMes(delta) {
       mesAtual += delta;
       if (mesAtual > 11) { mesAtual = 0; anoAtual++; }
-      if (mesAtual < 0)  { mesAtual = 11; anoAtual--; }
+      if (mesAtual < 0) { mesAtual = 11; anoAtual--; }
       renderCalendario();
     }
 
@@ -1401,19 +1486,31 @@
       document.getElementById("mesLabel").textContent = nomeMes.charAt(0).toUpperCase() + nomeMes.slice(1);
 
       const primeiroDia = new Date(anoAtual, mesAtual, 1).getDay();
-      const totalDias   = new Date(anoAtual, mesAtual + 1, 0).getDate();
+      const totalDias = new Date(anoAtual, mesAtual + 1, 0).getDate();
 
       for (let i = 0; i < primeiroDia; i++) cal.innerHTML += `<div class="dia vazio"></div>`;
 
       for (let d = 1; d <= totalDias; d++) {
         const dataIso = formatar(new Date(anoAtual, mesAtual, d));
-        const isHoje  = d === hoje.getDate() && mesAtual === hoje.getMonth() && anoAtual === hoje.getFullYear();
-        const evs     = todosEventos(dataIso);
+        const isHoje = d === hoje.getDate() && mesAtual === hoje.getMonth() && anoAtual === hoje.getFullYear();
+        const evs = todosEventos(dataIso);
 
-        const tags = evs.map(e => {
+        const maxVisiveis = 2;
+
+        const tagsVisiveis = evs.slice(0, maxVisiveis).map(e => {
           const cor = CORES[e.disc] || "#555";
-          return `<span class="evento-tag" style="background:${cor}">${escapeHtml(e.tipo || "?")} ${escapeHtml(e.disc || "")}</span>`;
+          return `<span class="evento-tag" style="background:${cor}">
+    ${escapeHtml(e.tipo || "?")} ${escapeHtml(e.disc || "")}
+  </span>`;
         }).join("");
+
+        const restantes = evs.length - maxVisiveis;
+
+        const tagExtra = restantes > 0
+          ? `<span class="evento-tag extra" onclick="event.stopPropagation(); verDia('${dataIso}')">+${restantes}</span>`
+          : "";
+
+        const tags = tagsVisiveis + tagExtra;
 
         cal.innerHTML += `
           <div class="dia${isHoje ? " hoje" : ""}" onclick="verDia('${dataIso}')">
@@ -1430,7 +1527,7 @@
     }
 
     function renderPopupVer(dataIso) {
-      const body   = document.getElementById("popupVerBody");
+      const body = document.getElementById("popupVerBody");
       const header = document.getElementById("popupVerHeader");
 
       const oldBtn = header.querySelector(".btn-add-evento");
@@ -1452,9 +1549,9 @@
       }
 
       body.innerHTML = evs.map((ev) => {
-        const cor     = CORES[ev.disc] || "#666";
+        const cor = CORES[ev.disc] || "#666";
         const descHtml = ev.desc ? `<div class="evento-item-desc">${escapeHtml(ev.desc)}</div>` : "";
-        const delHtml  = isAdmin ? `
+        const delHtml = isAdmin ? `
           <div class="evento-item-actions">
             <button class="btn-del-evento"
               onclick="removerEvento('${escapeAttr(dataIso)}','${escapeAttr(ev.disc)}','${escapeAttr(ev.tipo)}',this)">
@@ -1503,7 +1600,7 @@
       const tipo = document.getElementById("tipo").value;
       const disc = document.getElementById("disciplina").value;
       const desc = document.getElementById("desc").value.trim();
-      const btn  = document.getElementById("btnSalvarEvento");
+      const btn = document.getElementById("btnSalvarEvento");
 
       btn.classList.add("loading");
       btn.textContent = "Salvando...";
@@ -1558,7 +1655,7 @@
     function abrirEditarInfo(idx) {
       infoEditandoIdx = idx;
       const item = infos[idx];
-      document.getElementById("editInfoTitulo").value   = item.titulo;
+      document.getElementById("editInfoTitulo").value = item.titulo;
       document.getElementById("editInfoConteudo").value = item.conteudo;
       const sel = document.getElementById("editInfoCategoria");
       for (let i = 0; i < sel.options.length; i++) {
@@ -1569,9 +1666,9 @@
 
     function salvarEdicaoInfo() {
       if (infoEditandoIdx < 0) return;
-      const titulo    = document.getElementById("editInfoTitulo").value.trim();
+      const titulo = document.getElementById("editInfoTitulo").value.trim();
       const categoria = document.getElementById("editInfoCategoria").value;
-      const conteudo  = document.getElementById("editInfoConteudo").value.trim();
+      const conteudo = document.getElementById("editInfoConteudo").value.trim();
       if (!titulo || !conteudo) return showToast("⚠️ Preencha título e conteúdo", "err");
       infos[infoEditandoIdx] = { titulo, categoria, conteudo };
       localStorage.setItem("infos_v2", JSON.stringify(infos));
@@ -1581,13 +1678,13 @@
     }
 
     function salvarInfo() {
-      const titulo    = document.getElementById("infoTitulo").value.trim();
+      const titulo = document.getElementById("infoTitulo").value.trim();
       const categoria = document.getElementById("infoCategoria").value;
-      const conteudo  = document.getElementById("infoConteudo").value.trim();
+      const conteudo = document.getElementById("infoConteudo").value.trim();
       if (!titulo || !conteudo) return showToast("⚠️ Preencha título e conteúdo", "err");
       infos.push({ titulo, categoria, conteudo });
       localStorage.setItem("infos_v2", JSON.stringify(infos));
-      document.getElementById("infoTitulo").value   = "";
+      document.getElementById("infoTitulo").value = "";
       document.getElementById("infoConteudo").value = "";
       fecharPopup("popupInfo");
       renderInfos();
@@ -1605,16 +1702,16 @@
 
     function formatarBonito(iso) {
       const [y, m, d] = iso.split("-");
-      const meses = ["jan","fev","mar","abr","mai","jun","jul","ago","set","out","nov","dez"];
+      const meses = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
       return `${parseInt(d)} de ${meses[parseInt(m) - 1]} de ${y}`;
     }
 
     function escapeHtml(str) {
-      return (str || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+      return (str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
     function escapeAttr(str) {
-      return (str || "").replace(/'/g,"\\'");
+      return (str || "").replace(/'/g, "\\'");
     }
   </script>
 </body>
