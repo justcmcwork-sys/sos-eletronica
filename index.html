@@ -350,6 +350,7 @@
       height: 100dvh;
       overflow: hidden;
       background: var(--bg-dark);
+      position: relative;
     }
 
     .cal-nav {
@@ -412,20 +413,20 @@
     }
 
     .calendario {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: clamp(2px, 0.5vw, 4px);
-  padding: 0 clamp(4px, 1.5vw, 10px) calc(clamp(6px, 2vh, 14px) + var(--safe-bottom));
-  padding-left: max(clamp(4px, 1.5vw, 10px), var(--safe-left));
-  padding-right: max(clamp(4px, 1.5vw, 10px), var(--safe-right));
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: clamp(2px, 0.5vw, 4px);
+      padding: 0 clamp(4px, 1.5vw, 10px) calc(clamp(6px, 2vh, 14px) + var(--safe-bottom));
+      padding-left: max(clamp(4px, 1.5vw, 10px), var(--safe-left));
+      padding-right: max(clamp(4px, 1.5vw, 10px), var(--safe-right));
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
 
-  /* ✅ deixa altura natural */
-  align-content: start;
-}
+      /* ✅ deixa altura natural */
+      align-content: start;
+    }
 
     .dia {
       background: var(--bg-card);
@@ -1052,6 +1053,69 @@
       transform: scale(0.95);
     }
 
+    /* ===== LOADING OVERLAY ===== */
+    .loading-overlay {
+      position: absolute;
+      inset: 0;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: rgba(10, 10, 25, 0.55);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+
+      z-index: 500;
+
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .loading-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* caixa central */
+    .loading-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+
+      padding: 18px 22px;
+      border-radius: 16px;
+
+      background: rgba(26, 21, 53, 0.9);
+      border: 1.5px solid rgba(43, 187, 209, 0.3);
+
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    /* spinner */
+    .spinner {
+      width: 32px;
+      height: 32px;
+
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-top: 3px solid var(--accent);
+
+      border-radius: 50%;
+
+      animation: girar 0.8s linear infinite;
+    }
+
+    @keyframes girar {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
     /* ============================================================ TOAST ============================================================ */
     #toast {
@@ -1109,6 +1173,14 @@
 
   <!-- ===== CALENDÁRIO ===== -->
   <div id="calendarioContainer">
+
+    <!-- LOADING OVERLAY -->
+    <div id="loadingCalendario" class="loading-overlay">
+      <div class="loading-box">
+        <div class="spinner"></div>
+        <span>Carregando...</span>
+      </div>
+    </div>
     <div class="page-header">
       <h2>📅 CALENDÁRIO</h2>
       <div class="header-actions">
@@ -1372,17 +1444,39 @@
       return data;
     }
 
+    function salvarCacheEventos() {
+      localStorage.setItem("eventos_cache", JSON.stringify(eventosSheets));
+    }
+
+    function carregarCacheEventos() {
+      try {
+        const cache = JSON.parse(localStorage.getItem("eventos_cache"));
+        if (cache) eventosSheets = cache;
+      } catch { }
+    }
     async function sincronizarSheets() {
       try {
         const res = await fetch(APPS_SCRIPT_URL + "?action=get", { cache: "no-store" });
+
         if (!res.ok) throw new Error("HTTP " + res.status);
+
         const data = await res.json();
         if (data.erro) throw new Error(data.erro);
+
         eventosSheets = data;
+
+        salvarCacheEventos();
+
         renderCalendario();
+
+        // 🔥 tira overlay
+        esconderLoading();
+
       } catch (e) {
         console.error("[SOS] Falha na leitura:", e);
         showToast("⚠️ Erro ao sincronizar com a planilha", "err");
+
+        esconderLoading();
       }
     }
 
@@ -1402,13 +1496,25 @@
     function abrirCalendario() {
       document.getElementById("menu").style.display = "none";
       const cal = document.getElementById("calendarioContainer");
+
       cal.style.display = "flex";
       cal.style.flexDirection = "column";
+
       telaAtual = "calendario";
+
+      // 🔥 mostra overlay
+      mostrarLoading();
+
+      // 🔥 carrega cache (se tiver)
+      carregarCacheEventos();
       renderCalendario();
+
+      // 🔄 busca real
       sincronizarSheets();
+
       clearInterval(syncTimer);
       syncTimer = setInterval(sincronizarSheets, SYNC_INTERVALO);
+
       atualizarPermissoes();
     }
 
@@ -1504,26 +1610,26 @@
         // ===== NOVA LÓGICA (2 +X) =====
         const maxVisiveis = window.innerWidth <= 768 ? 2 : 3;
 
-const tagsVisiveis = evs
-  .slice(0, maxVisiveis)
-  .map(e => {
-    const cor = CORES[e.disc] || "#555";
-    return `<span class="evento-tag" style="background:${cor}">
+        const tagsVisiveis = evs
+          .slice(0, maxVisiveis)
+          .map(e => {
+            const cor = CORES[e.disc] || "#555";
+            return `<span class="evento-tag" style="background:${cor}">
       ${escapeHtml(e.tipo || "?")} ${escapeHtml(e.disc || "")}
     </span>`;
-  })
-  .join("");
+          })
+          .join("");
 
-const restantes = evs.length - maxVisiveis;
+        const restantes = evs.length - maxVisiveis;
 
-let tagExtra = "";
-if (restantes > 0) {
-  tagExtra = `
+        let tagExtra = "";
+        if (restantes > 0) {
+          tagExtra = `
     <span class="evento-tag extra"
       onclick="event.stopPropagation(); verDia('${dataIso}')">
       +${restantes}
     </span>`;
-}
+        }
 
         const tags = tagsVisiveis + tagExtra;
         // ===== FIM =====
@@ -1534,6 +1640,16 @@ if (restantes > 0) {
         ${tags}
       </div>`;
       }
+    }
+
+    function mostrarLoading() {
+      const el = document.getElementById("loadingCalendario");
+      if (el) el.classList.add("show");
+    }
+
+    function esconderLoading() {
+      const el = document.getElementById("loadingCalendario");
+      if (el) el.classList.remove("show");
     }
 
     function verDia(dataIso) {
