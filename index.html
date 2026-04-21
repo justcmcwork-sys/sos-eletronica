@@ -1051,6 +1051,54 @@
       transform: scale(0.95);
     }
 
+    @media (max-width: 768px) {
+
+  /* 🔲 Quadrinhos maiores */
+  .calendar-day {
+    min-height: 100px;
+    height: auto;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow: hidden;
+  }
+
+  /* 🔢 Número do dia menor */
+  .day-number {
+    font-size: 11px;
+    margin-bottom: 2px;
+  }
+
+  /* 📦 Container dos eventos */
+  .day-events {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    width: 100%;
+  }
+
+  /* 🏷️ Eventos */
+  .event {
+    font-size: 10px;
+    padding: 3px 5px;
+    border-radius: 6px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ➕ +X eventos */
+  .event-more {
+    font-size: 9px;
+    color: #aaa;
+    padding-left: 4px;
+    margin-top: 2px;
+    opacity: 0.8;
+  }
+}
+
     /* ============================================================ TOAST ============================================================ */
     #toast {
       position: fixed;
@@ -1500,24 +1548,28 @@
         const evs = todosEventos(dataIso);
 
         // ===== NOVA LÓGICA (2 +X) =====
-        const maxVisiveis = 2;
+        const maxVisiveis = window.innerWidth <= 768 ? 2 : 3;
 
-        const tagsVisiveis = evs
-          .slice(0, maxVisiveis)
-          .map(e => {
-            const cor = CORES[e.disc] || "#555";
-            return `<span class="evento-tag" style="background:${cor}">
-          ${escapeHtml(e.tipo || "?")} ${escapeHtml(e.disc || "")}
-        </span>`;
-          })
-          .join("");
+const tagsVisiveis = evs
+  .slice(0, maxVisiveis)
+  .map(e => {
+    const cor = CORES[e.disc] || "#555";
+    return `<span class="evento-tag" style="background:${cor}">
+      ${escapeHtml(e.tipo || "?")} ${escapeHtml(e.disc || "")}
+    </span>`;
+  })
+  .join("");
 
-        const restantes = evs.length - maxVisiveis;
+const restantes = evs.length - maxVisiveis;
 
-        let tagExtra = "";
-        if (restantes > 0) {
-          tagExtra = `<span class="evento-tag extra" onclick="event.stopPropagation(); verDia('${dataIso}')">+${restantes}</span>`;
-        }
+let tagExtra = "";
+if (restantes > 0) {
+  tagExtra = `
+    <span class="evento-tag extra"
+      onclick="event.stopPropagation(); verDia('${dataIso}')">
+      +${restantes}
+    </span>`;
+}
 
         const tags = tagsVisiveis + tagExtra;
         // ===== FIM =====
