@@ -412,19 +412,20 @@
     }
 
     .calendario {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: clamp(2px, 0.5vw, 4px);
-      padding: 0 clamp(4px, 1.5vw, 10px) calc(clamp(6px, 2vh, 14px) + var(--safe-bottom));
-      padding-left: max(clamp(4px, 1.5vw, 10px), var(--safe-left));
-      padding-right: max(clamp(4px, 1.5vw, 10px), var(--safe-right));
-      flex: 1;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior: contain;
-      align-content: stretch;
-      grid-auto-rows: 1fr;
-    }
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: clamp(2px, 0.5vw, 4px);
+  padding: 0 clamp(4px, 1.5vw, 10px) calc(clamp(6px, 2vh, 14px) + var(--safe-bottom));
+  padding-left: max(clamp(4px, 1.5vw, 10px), var(--safe-left));
+  padding-right: max(clamp(4px, 1.5vw, 10px), var(--safe-right));
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+
+  /* ✅ deixa altura natural */
+  align-content: start;
+}
 
     .dia {
       background: var(--bg-card);
