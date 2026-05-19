@@ -45,7 +45,6 @@
       padding-top: var(--safe-top);
     }
 
-    /* Scanlines — desativado em landscape mobile pra não pesar */
     body::before {
       content: '';
       pointer-events: none;
@@ -78,7 +77,6 @@
       padding-right: max(clamp(16px, 5vw, 40px), var(--safe-right));
       position: relative;
       background-color: var(--bg-dark);
-      /* Portrait: foto vertical */
       background-image: url('FUNDO-VERTICAL.png');
       background-size: cover;
       background-position: center;
@@ -87,22 +85,14 @@
     @media (orientation: landscape) {
       #menu {
         background-image: url('FUNDO-HORIZONTAL.png');
-
-        /* volta pra coluna (um embaixo do outro) */
         flex-direction: column;
-
-        /* centraliza bonitinho */
         justify-content: center;
         align-items: center;
-
-        /* gap menor (aqui você controla o espaço!) */
         gap: clamp(16px, 3.5vh, 28px);
-
         padding-top: max(clamp(8px, 2vh, 16px), var(--safe-top));
         padding-bottom: max(clamp(8px, 2vh, 16px), var(--safe-bottom));
       }
 
-      /* remove o comportamento lateral do logo */
       .logo-box {
         margin-bottom: 4px;
         max-width: 100%;
@@ -129,10 +119,8 @@
     .logo-box {
       text-align: center;
       margin-bottom: clamp(10px, 2.5vh, 20px);
-      /* antes era bem menor */
     }
 
-    /* Em landscape o logo-box fica ao lado dos botões, sem margin-bottom */
     @media (orientation: landscape) {
       .logo-box {
         margin-bottom: 0;
@@ -170,10 +158,8 @@
 
     h1 {
       font-size: clamp(14px, 5.5vw, 36px);
-      /* levemente maior */
       text-shadow: 3px 3px #ff3b3b, 6px 6px rgba(255, 59, 59, 0.3);
       letter-spacing: 3px;
-      /* antes era 2px */
       line-height: 1.6;
       text-align: center;
     }
@@ -193,7 +179,6 @@
       text-align: center;
     }
 
-    /* Grupo de botões do menu */
     .menu-btns {
       display: flex;
       flex-direction: column;
@@ -423,8 +408,6 @@
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain;
-
-      /* ✅ deixa altura natural */
       align-content: start;
     }
 
@@ -493,18 +476,14 @@
       margin-top: 4px;
       padding: 5px 8px;
       border-radius: 6px;
-
       font-size: clamp(8px, 2vw, 12px);
       font-weight: 700;
-
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-
       color: #fff;
       font-family: 'Poppins', sans-serif;
       line-height: 1.4;
-
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
     }
 
@@ -721,6 +700,7 @@
     .btn-salvar.loading {
       opacity: 0.6;
       pointer-events: none;
+      cursor: not-allowed;
     }
 
     .btn-fechar {
@@ -1035,7 +1015,6 @@
       margin-bottom: 14px;
     }
 
-
     .sync-badge {
       display: none;
     }
@@ -1057,17 +1036,13 @@
     .loading-overlay {
       position: absolute;
       inset: 0;
-
       display: flex;
       align-items: center;
       justify-content: center;
-
       background: rgba(10, 10, 25, 0.55);
       backdrop-filter: blur(6px);
       -webkit-backdrop-filter: blur(6px);
-
       z-index: 500;
-
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.25s ease;
@@ -1078,36 +1053,27 @@
       pointer-events: all;
     }
 
-    /* caixa central */
     .loading-box {
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 12px;
-
       padding: 18px 22px;
       border-radius: 16px;
-
       background: rgba(26, 21, 53, 0.9);
       border: 1.5px solid rgba(43, 187, 209, 0.3);
-
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-
       font-family: 'Poppins', sans-serif;
       font-size: 13px;
       font-weight: 600;
     }
 
-    /* spinner */
     .spinner {
       width: 32px;
       height: 32px;
-
       border: 3px solid rgba(255, 255, 255, 0.2);
       border-top: 3px solid var(--accent);
-
       border-radius: 50%;
-
       animation: girar 0.8s linear infinite;
     }
 
@@ -1395,6 +1361,12 @@
     let anoAtual = new Date().getFullYear();
     let infoEditandoIdx = -1;
 
+    // =====================================================================
+    // FLAG ANTI-DUPLO-CLIQUE — bloqueia qualquer operação enquanto uma
+    // já está em andamento (salvar OU remover)
+    // =====================================================================
+    let operacaoEmAndamento = false;
+
     const infosDefault = [
       {
         titulo: "E-mails dos Professores",
@@ -1433,6 +1405,20 @@
       toastTimer = setTimeout(() => { el.className = ""; }, 3000);
     }
 
+    // =====================================================================
+    // Pausa o sync automático enquanto uma operação está rodando,
+    // para evitar que o intervalo re-renderize no meio do processo
+    // =====================================================================
+    function pausarSync() {
+      clearInterval(syncTimer);
+      syncTimer = null;
+    }
+
+    function retomarSync() {
+      if (syncTimer) clearInterval(syncTimer);
+      syncTimer = setInterval(sincronizarSheets, SYNC_INTERVALO);
+    }
+
     async function chamarAPI(payload) {
       const res = await fetch(APPS_SCRIPT_URL, {
         method: "POST",
@@ -1454,28 +1440,24 @@
         if (cache) eventosSheets = cache;
       } catch { }
     }
+
     async function sincronizarSheets() {
+      // Não sincroniza se tem operação acontecendo (evita render no meio do add/delete)
+      if (operacaoEmAndamento) return;
+
       try {
         const res = await fetch(APPS_SCRIPT_URL + "?action=get", { cache: "no-store" });
-
         if (!res.ok) throw new Error("HTTP " + res.status);
-
         const data = await res.json();
         if (data.erro) throw new Error(data.erro);
 
         eventosSheets = data;
-
         salvarCacheEventos();
-
         renderCalendario();
-
-        // 🔥 tira overlay
         esconderLoading();
-
       } catch (e) {
         console.error("[SOS] Falha na leitura:", e);
         showToast("⚠️ Erro ao sincronizar com a planilha", "err");
-
         esconderLoading();
       }
     }
@@ -1490,26 +1472,20 @@
       document.getElementById("infoContainer").style.display = "none";
       document.getElementById("fabBtn").style.display = "none";
       clearInterval(syncTimer);
+      syncTimer = null;
       telaAtual = "menu";
     }
 
     function abrirCalendario() {
       document.getElementById("menu").style.display = "none";
       const cal = document.getElementById("calendarioContainer");
-
       cal.style.display = "flex";
       cal.style.flexDirection = "column";
-
       telaAtual = "calendario";
 
-      // 🔥 mostra overlay
       mostrarLoading();
-
-      // 🔥 carrega cache (se tiver)
       carregarCacheEventos();
       renderCalendario();
-
-      // 🔄 busca real
       sincronizarSheets();
 
       clearInterval(syncTimer);
@@ -1592,12 +1568,10 @@
       const primeiroDia = new Date(anoAtual, mesAtual, 1).getDay();
       const totalDias = new Date(anoAtual, mesAtual + 1, 0).getDate();
 
-      // dias vazios
       for (let i = 0; i < primeiroDia; i++) {
         cal.innerHTML += `<div class="dia vazio"></div>`;
       }
 
-      // dias do mês
       for (let d = 1; d <= totalDias; d++) {
         const dataIso = formatar(new Date(anoAtual, mesAtual, d));
         const isHoje =
@@ -1606,8 +1580,6 @@
           anoAtual === hoje.getFullYear();
 
         const evs = todosEventos(dataIso);
-
-        // ===== NOVA LÓGICA (2 +X) =====
         const maxVisiveis = window.innerWidth <= 768 ? 2 : 3;
 
         const tagsVisiveis = evs
@@ -1615,30 +1587,26 @@
           .map(e => {
             const cor = CORES[e.disc] || "#555";
             return `<span class="evento-tag" style="background:${cor}">
-      ${escapeHtml(e.tipo || "?")} ${escapeHtml(e.disc || "")}
-    </span>`;
+              ${escapeHtml(e.tipo || "?")} ${escapeHtml(e.disc || "")}
+            </span>`;
           })
           .join("");
 
         const restantes = evs.length - maxVisiveis;
-
         let tagExtra = "";
         if (restantes > 0) {
           tagExtra = `
-    <span class="evento-tag extra"
-      onclick="event.stopPropagation(); verDia('${dataIso}')">
-      +${restantes}
-    </span>`;
+            <span class="evento-tag extra"
+              onclick="event.stopPropagation(); verDia('${dataIso}')">
+              +${restantes}
+            </span>`;
         }
 
-        const tags = tagsVisiveis + tagExtra;
-        // ===== FIM =====
-
         cal.innerHTML += `
-      <div class="dia${isHoje ? " hoje" : ""}" onclick="verDia('${dataIso}')">
-        <span class="num-dia">${d}</span>
-        ${tags}
-      </div>`;
+          <div class="dia${isHoje ? " hoje" : ""}" onclick="verDia('${dataIso}')">
+            <span class="num-dia">${d}</span>
+            ${tagsVisiveis + tagExtra}
+          </div>`;
       }
     }
 
@@ -1681,13 +1649,15 @@
         return;
       }
 
-      body.innerHTML = evs.map((ev) => {
+      body.innerHTML = evs.map((ev, idx) => {
         const cor = CORES[ev.disc] || "#666";
         const descHtml = ev.desc ? `<div class="evento-item-desc">${escapeHtml(ev.desc)}</div>` : "";
+        // ✅ Usa índice numérico para identificar o evento com precisão
         const delHtml = isAdmin ? `
           <div class="evento-item-actions">
             <button class="btn-del-evento"
-              onclick="removerEvento('${escapeAttr(dataIso)}','${escapeAttr(ev.disc)}','${escapeAttr(ev.tipo)}',this)">
+              data-idx="${idx}"
+              onclick="removerEvento('${escapeAttr(dataIso)}', ${idx}, this)">
               🗑 Remover
             </button>
           </div>` : "";
@@ -1709,47 +1679,107 @@
       document.getElementById("popup").style.display = "flex";
     }
 
-    async function removerEvento(dataIso, disciplina, tipo, btnEl) {
+    async function removerEvento(dataIso, idx, btnEl) {
       if (!isAdmin) return;
-      if (!confirm(`Remover "${tipo}" de ${disciplina} em ${formatarBonito(dataIso)}?`)) return;
+
+      // ✅ Bloqueia duplo clique
+      if (operacaoEmAndamento) {
+        showToast("⏳ Aguarde, operação em andamento...", "err");
+        return;
+      }
+
+      const evs = todosEventos(dataIso);
+      const ev = evs[idx];
+      if (!ev) {
+        showToast("⚠️ Evento não encontrado", "err");
+        return;
+      }
+
+      if (!confirm(`Remover "${ev.tipo}" de ${ev.disc} em ${formatarBonito(dataIso)}?`)) return;
+
+      // ✅ Trava operação e para sync
+      operacaoEmAndamento = true;
+      pausarSync();
 
       btnEl.classList.add("loading");
       btnEl.textContent = "Removendo...";
 
       try {
-        await chamarAPI({ action: "delete", data: dataIso, disciplina, tipo });
+        await chamarAPI({ action: "delete", data: dataIso, disciplina: ev.disc, tipo: ev.tipo });
         showToast("🗑 Evento removido!", "ok");
-        await sincronizarSheets();
+
+        // ✅ Atualiza cache local imediatamente (remove só esse item)
+        evs.splice(idx, 1);
+        if (evs.length === 0) {
+          delete eventosSheets[dataIso];
+        } else {
+          eventosSheets[dataIso] = evs;
+        }
+        salvarCacheEventos();
+
+        renderCalendario();
         renderPopupVer(dataIso);
       } catch (e) {
         console.error("[SOS] Erro ao remover:", e);
         showToast("❌ Erro ao remover: " + e.message, "err");
         btnEl.classList.remove("loading");
         btnEl.textContent = "🗑 Remover";
+      } finally {
+        // ✅ Libera operação e retoma sync (busca estado real da planilha)
+        operacaoEmAndamento = false;
+        retomarSync();
+        // Faz uma sincronização imediata para confirmar estado real
+        setTimeout(sincronizarSheets, 1500);
       }
     }
 
     async function salvarEvento() {
+      // ✅ Bloqueia se já tem operação rolando
+      if (operacaoEmAndamento) {
+        showToast("⏳ Aguarde, operação em andamento...", "err");
+        return;
+      }
+
       const tipo = document.getElementById("tipo").value;
       const disc = document.getElementById("disciplina").value;
       const desc = document.getElementById("desc").value.trim();
       const btn = document.getElementById("btnSalvarEvento");
 
+      // ✅ Trava operação e para sync
+      operacaoEmAndamento = true;
+      pausarSync();
+
       btn.classList.add("loading");
       btn.textContent = "Salvando...";
+      btn.disabled = true;
 
       try {
         await chamarAPI({ action: "add", data: dataSelecionada, tipo, disciplina: disc, descricao: desc });
+
+        // ✅ Atualiza cache local imediatamente (adiciona ao array)
+        if (!eventosSheets[dataSelecionada]) {
+          eventosSheets[dataSelecionada] = [];
+        }
+        eventosSheets[dataSelecionada].push({ tipo, disc, desc });
+        salvarCacheEventos();
+
         document.getElementById("desc").value = "";
         fecharPopup("popup");
         showToast("✅ Salvo na planilha!", "ok");
-        await sincronizarSheets();
+        renderCalendario();
       } catch (e) {
         console.error("[SOS] Erro ao salvar:", e);
         showToast("❌ Erro ao salvar: " + e.message, "err");
       } finally {
         btn.classList.remove("loading");
         btn.textContent = "Salvar";
+        btn.disabled = false;
+
+        // ✅ Libera operação e retoma sync
+        operacaoEmAndamento = false;
+        retomarSync();
+        // Faz uma sincronização imediata para confirmar estado real
+        setTimeout(sincronizarSheets, 1500);
       }
     }
 
@@ -1849,4 +1879,5 @@
   </script>
 </body>
 
+</html>
 </html>
